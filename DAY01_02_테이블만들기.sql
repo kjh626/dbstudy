@@ -26,7 +26,7 @@
    우리가 집어넣는 데이터는 대문자,소문자로 적으면 유지가 된다. 키워드랑 다른 경우라고 생각
 
 /*
-    제약조건(Constraint) -- 항상 키워드의 입력은 띄어쓰기만 잘하면 된다. 순서도 상관없음(NOT NULL먼저 하든 UNIQUE먼저 하든)
+    제약조건(Constraint) 5개 중 3개 -- 항상 키워드의 입력은 띄어쓰기만 잘하면 된다. 순서도 상관없음(NOT NULL먼저 하든 UNIQUE먼저 하든)
     1. 널
         1) NULL 또는 생략
         2) NOT NULL
@@ -39,10 +39,10 @@
 -- 예시 테이블
 DROP TABLE PRODUCT;    -- 지우기 , 지울 때는 생성 전에 코드를 넣어 주는 것이 좋다.
 CREATE TABLE PRODUCT(   -- CREATE TABLE 테이블이름. PRODUCT 생성하고 테이블에서 데이터탭은 행을 의미한다고 보면 됨.?
-    CODE         VARCHAR2(2 BYTE)  NOT NULL UNIQUE,  -- 자바랑 반대로 씀. NOT NULL 쓰면 필수로 입력을 해줘야 한다는 뜻, 값이 꼭 필요하다.
+    CODE         VARCHAR2(2 BYTE)  NOT NULL UNIQUE,  -- 코드 자바랑 반대로 씀. NOT NULL 쓰면 필수로 입력을 해줘야 한다는 뜻, 값이 꼭 필요하다.
     MODEL        VARCHAR2(10 BYTE) NULL, -- 얘네가 Column이 된다.(CODE, MODEL, ... )
-    CATEGORY     VARCHAR2(5 BYTE),
-    PRICE        NUMBER            CHECK(PRICE >= 0),  
-    AMOUNT       NUMBER(2)         CHECK(AMOUNT >= 0 AND AMOUNT <= 100), -- 음수가 들어가면 안 된다.(값의 제한 필요)
+    CATEGORY     VARCHAR2(5 BYTE)  CHECK(CATEGORY = 'MAIN' OR CATEGORY = 'SUB'),  -- 대체문법 : CHECK(CATEGORY IN('MAIN', 'SUB')) => 무조건 추천!  -- CATEGORY MAIN, SUB 둘중 하나라고 생각(마치 성별처럼). 조건(카테고리 제약조건) 거는 거임
+    PRICE        NUMBER            CHECK(PRICE >= 0),  -- 음수가 들어가면 안 된다.(값의 제한 필요)
+    AMOUNT       NUMBER(2)         CHECK(AMOUNT >= 0 AND AMOUNT <= 100),          -- 대체문법 : CHECK(AMOUNT BETWEEN 0 AND 100) => 무조건 추천! 0과 100을 포함하는 식임.
     MANUFACTURED DATE
 );
