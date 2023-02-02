@@ -47,7 +47,7 @@ SELECT E.ENAME
   FROM EMP E;         -- EMP 테이블의 별명을 E 로 부여한다. AS(ALIAS)를 사용할 수 없다.
 
 --  5) 칼럼 별명 지정하기
-SELECT E.ENAME AS NAME   -- E.ENAME 칼럼의 별명을 '사원명'으로 부여한다. AS(ALIAS)를 사용할 수 있다.(주의할 점: 테이블의 별명을 지정할 때는 AS 못 씀)
+SELECT E.ENAME AS 사원명   -- E.ENAME 칼럼의 별명을 '사원명'으로 부여한다. AS(ALIAS)를 사용할 수 있다.(주의할 점: 테이블의 별명을 지정할 때는 AS 못 씀)
   FROM EMP E;
 
 -- 2. 사원 테이블의 모든 칼럼 조회하기
@@ -91,9 +91,9 @@ SELECT EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO
  WHERE COMM IS NOT NULL
    AND COMM != 0;   -- 한 줄에 조건 하나씩해서 줄맞춰줄 수 있다.
    /*
-WHERE 1 = 1                -- 이렇게 써야될 때가 생길 거다. (의미는 여기까지는 쿼리문 바꾸지 않겠다)
- [AND COMM IS NOT NULL]    -- 이 조건([ ])이 빠질 때도 있고 넣어야 할 때도 있다.
- [AND COMM != 0];          -- 1 = 1 안 쓰면 [] 빠졌을 때 WHERE 다음에 AND 오면 오류가 나게 된다.(=> 1=1넣는 게 좋지는 않은데..)
+    WHERE 1 = 1                -- 이렇게 써야될 때가 생길 거다. (의미는 여기까지는 쿼리문 바꾸지 않겠다)
+    [AND COMM IS NOT NULL]    -- 이 조건([ ])이 빠질 때도 있고 넣어야 할 때도 있다.
+    [AND COMM != 0];          -- 1 = 1 안 쓰면 [] 빠졌을 때 WHERE 다음에 AND 오면 오류가 나게 된다.(=> 1=1넣는 게 좋지는 않은데..)
    */
 
 -- 8. ENAME이 A로 시작하는 사원 목록 조회하기
