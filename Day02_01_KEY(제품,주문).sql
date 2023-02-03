@@ -18,11 +18,22 @@
         2) 삭제 규칙 : "반드시" 자식 테이블을 먼저 삭제한다.
 */
 
--- 제품 테이블
+-- 테이블 삭제 (삭제를 몰아서 위쪽에 배치하고, 생성을 몰아서 아래쪽으로 배치하면 문제 없을 것)
+DROP TABLE ORDER_TBL;    -- 삭제 규칙을 지켜줘야 한다. (만든 순서 거꾸로 해주면 됨.)
 DROP TABLE PRODUCT_TBL;
+
+-- 제품 테이블(부모 테이블)
 CREATE TABLE PRODUCT_TBL(
     PROD_NO NUMBER NOT NULL PRIMARY KEY,   -- 문법 기억해라. 보통 NOT NULL 써준다. UNIQUE는 같이 써주면 안 됨.
     PROD_NAME VARCHAR2(10 BYTE),
     PROD_PRICE NUMBER,
-    PRO_STOCK NUMBER
+    PROD_STOCK NUMBER
+);
+
+-- 주문 테이블(자식 테이블)
+CREATE TABLE ORDER_TBL(
+    ORDER_NO NUMBER NOT NULL PRIMARY KEY,
+    USER_ID VARCHAR2(10 BYTE),
+    PROD_NO NUMBER REFERENCES PRODUCT_TBL(PROD_NO),  -- 외래키 문법
+    ORDER_DATE DATE
 );
