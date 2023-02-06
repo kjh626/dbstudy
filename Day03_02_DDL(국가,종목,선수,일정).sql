@@ -52,7 +52,7 @@ CREATE TABLE SCHEDULE_TBL(
     S_INFO       VARCHAR2(100 BYTE)
 );
 
--- 기본키 제거하기
+-- 기본키 제거하기(문법 소개일 뿐, 실제로 작성할 필요는 없습니다. DROP TABLE을 수행하면 제약조건도 모두 제거됩니다.)
 ALTER TABLE NATION_TBL
     DROP PRIMARY KEY;  -- 테이블의 기본키는 오직 1개이므로 제약조건 이름을 몰라도 삭제할 수 있다.
 ALTER TABLE EVENT_TBL
@@ -72,7 +72,7 @@ ALTER TABLE PLAYER_TBL
 ALTER TABLE SCHEDULE_TBL
     ADD CONSTRAINT PK_SCHEDULE PRIMARY KEY(S_NO);
         
--- 외래키 제거하기
+-- 외래키 제거하기(문법 소개일 뿐, 실제로 작성할 필요는 없습니다. DROP TABLE을 수행하면 제약조건도 모두 제거됩니다.)
 ALTER TABLE PLAYER_TBL
     DROP CONSTRAINT FK_PLAYER_NATION;   -- 이렇게 이름을 알고 있어야 DROP이 가능함
 ALTER TABLE PLAYER_TBL
