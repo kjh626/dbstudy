@@ -18,6 +18,20 @@
         2) 삭제 규칙 : "반드시" 자식 테이블을 먼저 삭제한다.
 */
 
+/*
+    외래키 제약 조건의 옵션
+    1. ON DELETE CASCADE - 같이 지워주세요
+        1) 참조 중인 PARENT KEY가 삭제되면 해당 PARENT KEY를 가진 행 전체를 함께 삭제한다.
+        2) 예시) 회원 탈퇴 시 작성한 모든 게시글이 함께 삭제됩니다.
+                 게시글 삭제 시 해당 게시글에 달린 모든 댓글이 함께 삭제됩니다.
+                 
+    2. ON DELETE SET NULL - 지우지는 말고 NULL 처리 해달라
+        1) 참조 중인 PARENT KEY가 삭제되면 해당 PARENT KEY를 가진 칼럼 값만 NULL로 처리한다.
+        2) 예시) 어떤 상품을 제거하였으나 해당 상품의 주문 내역은 남아 있는 경우
+        1. CASCADE 
+    ※ NOT NULL 이면 방법이 CASCADE밖에 없다
+*/
+
 -- 테이블 삭제 (삭제를 몰아서 위쪽에 배치하고, 생성을 몰아서 아래쪽으로 배치하면 문제 없을 것)
 DROP TABLE ORDER_TBL;    -- 삭제 규칙을 지켜줘야 한다. (만든 순서 거꾸로 해주면 됨.)
 DROP TABLE PRODUCT_TBL;
@@ -38,7 +52,7 @@ CREATE TABLE ORDER_TBL(
     PROD_NO NUMBER,  -- 외래키 문법
     ORDER_DATE DATE,     -- 외래키 제약조건 이름 주는 방법 REFERENCES 앞에 CONSTRAINT ~~~~
     CONSTRAINT PK_ORDER PRIMARY KEY(ORDER_NO),  -- ☆이 문법을 외워라☆
-    CONSTRAINT FK_ORDER_PROD FOREIGN KEY(PROD_NO) REFERENCES PRODUCT_TBL(PROD_NO)  -- ☆이 문법을 외워라☆
+    CONSTRAINT FK_ORDER_PROD FOREIGN KEY(PROD_NO) REFERENCES PRODUCT_TBL(PROD_NO) ON DELETE CASCADE  -- ☆이 문법을 외워라☆
 );
 
 
