@@ -66,7 +66,7 @@ SELECT
 
 
 -- 3. 행 번호 반환하기
--- ROW_NUMBER() OVER(ORDER BY 순위구할칼럼 ASC|DESC)  
+--    ROW_NUMBER() OVER(ORDER BY 순위구할칼럼 ASC|DESC)  
 -- 정렬 결과에 행 번호를 추가해서 반환하는 함수이다. 
 -- 예를 들어 순위구할 때 행번호 구하는 게 더 유용할 수가 있다. 우리들은 순위구하는 것보다 행번호 붙이는 걸(ROW_NUMBER) 더 많이 사용함. (RANK와 비슷하지만..)
 -- RANK와는 다른 점 동점자일 때 같은 번호로 처리하지 않음.
