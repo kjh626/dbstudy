@@ -85,16 +85,12 @@ SELECT
        FIRST_NAME LIKE 'J%';
 
 -- 10. EMPLOYEES 테이블에서 JOB_ID가 'MAN'으로 끝나는 사원들의 MANAGER_ID를 중복을 제거하여 조회하시오.
-SELECT
-       JOB_ID
-     , MANAGER_ID
-     , FIRST_NAME
+SELECT DISTINCT MANAGER_ID
   FROM 
        EMPLOYEES
  WHERE 
-       JOB_ID LIKE '%MAN'
- GROUP BY
-       MANAGER_ID;
+       JOB_ID LIKE '%MAN';
+
 
 -- 11. EMPLOYEES 테이블에서 전체 사원을 DEPARTMENT_ID의 오름차순으로 조회하되, 동일한 DEPARTMENT_ID 내에서는 HIRE_DATE의 오름차순으로 조회하시오.
 SELECT
@@ -103,11 +99,19 @@ SELECT
      , HIRE_DATE  
   FROM 
        EMPLOYEES
- ORDER BY DEPARTMENT_ID ASC, HIRE_DATE ASC;
+ ORDER BY DEPARTMENT_ID ASC, TO_DATE(HIRE_DATE, 'YY/MM/DD') ASC;
 
 -- 12. EMPLOYEES 테이블에서 DEPARTMENT_ID가 80인 사원들을 높은 SALARY순으로 조회하시오. SALARY는 9,000처럼 천 단위 구분기호를 표기해서 조회하시오.
+SELECT DEPARTMENT_ID, FIRST_NAME, TO_CHAR(SALARY, '99,999') AS SALARY
+  FROM EMPLOYEES
+ WHERE DEPARTMENT_ID = 80
+ ORDER BY
+       SALARY DESC;
 
 -- 13. EMPLOYEES 테이블에서 전체 사원의 근무 개월 수를 정수로 조회하시오. 1개월 1일을 근무했다면 2개월을 근무한 것으로 처리해서 조회하시오.
+SELECT
+       MONTHS_BETWEEN(SYSDATE, TO_DATE(HIRE_DATE, 'YY/MM/DD'))
+  FROM EMPLOYEES;
 
 -- 14. EMPLOYEES 테이블에서 PHONE_NUMBER에 따른 지역(REGION)을 조회하시오.
 -- PHONE_NUMBER가 011로 시작하면 'MOBILE', 515로 시작하면 'EAST', 590으로 시작하면 'WEST', 603으로 시작하면 'SOUTH', 650으로 시작하면 'NORTH'로 조회하시오.
