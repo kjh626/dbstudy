@@ -78,7 +78,7 @@ SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
 -- 6. 부서번호가 2인 부서에 근무하는 사원들의 직급과 일치하는 사원을 조회하시오.
 SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
   FROM EMPLOYEE_TBL
- WHERE POSITION IN (SELECT POSITION     --==> POSITION IN('부장, '과장';) -> 값을 2개 반환한다고 생각?
+ WHERE POSITION IN (SELECT POSITION     --==> POSITION IN('부장, '과장') -> 값을 2개 반환한다고 생각?
                      FROM EMPLOYEE_TBL    -- 단일행 연산자이기 때문에 오류가 남. 등호(=) 단일행 연산자, 결과가 여러개 나오는 다중행 서브쿼리이면 IN을 넣어주면 된다.
                     WHERE DEPART = 2);    -- 단일행이 아님. 왜냐? DEPART 라는 칼럼이 PK도 아니고 UNIQUE도 아니기 때문에..
                                     -- 서브쿼리의 WHERE절 에서 사용한 칼럼이 PK나 UNIQUE칼럼이 아니므로 다중 행 서브쿼리이다.
