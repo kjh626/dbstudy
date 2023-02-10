@@ -18,7 +18,7 @@
         1) 결과 행이 1개이다.
         2) 단일 행 서브쿼리인 대표적인 경우
             (1) WHERE절에서 사용한 동등비교(=) 칼럼이 PK, UNIQUE 칼럼인 경우
-            (2) 집게함수처럼 결과가 1개의 값을 반환하는 경우
+            (2) 집계함수처럼 결과가 1개의 값을 반환하는 경우
         3) 단일 행 서브쿼리에서 사용하는 연산자
             단일 행 연산자를 사용(=, !=, >, >=, <, <=)
     2. 다중 행 서브쿼리
@@ -64,18 +64,30 @@ SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
                  FROM EMPLOYEE_TBL);
                 
 -- 4. 평균 급여 이상을 받는 사원을 조회하시오.
+SELECT 사원정보
+  FROM 사원
+ WHERE 급여 >= (평균 급여);
+ 
 SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
   FROM EMPLOYEE_TBL
  WHERE SALARY > (SELECT AVG(SALARY)
                    FROM EMPLOYEE_TBL);
                   
 -- 5. 평균 근속 개월 수 이상을 근무한 사원을 조회하시오. 서브쿼리의 결과가 몇 개인지 계속 생각해라
+SELECT 사원정보
+  FROM 사원
+ WHERE 근속개월수 >= (평균 근속개월수);
+ 
 SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
   FROM EMPLOYEE_TBL
  WHERE MONTHS_BETWEEN(SYSDATE, HIRE_DATE) >= (SELECT AVG(MONTHS_BETWEEN(SYSDATE, HIRE_DATE))
                                                 FROM EMPLOYEE_TBL);
 
 -- 6. 부서번호가 2인 부서에 근무하는 사원들의 직급과 일치하는 사원을 조회하시오.
+SELECT 사원정보
+  FROM 사원
+ WHERE 직급 IN (부서번호가 2인 부서에 근무하는 사원들의 직급);
+ 
 SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
   FROM EMPLOYEE_TBL
  WHERE POSITION IN (SELECT POSITION     --==> POSITION IN('부장, '과장') -> 값을 2개 반환한다고 생각?
@@ -123,6 +135,10 @@ SELECT D.DEPT_NO, D.DEPT_NAME, D.LOCATION, E.NAME
  WHERE E.POSITION = '과장';
 
 -- 9. '영업부'에서 가장 높은 급여보다 더 높은 급여를 받는 사원을 조회하시오.
+SELECT 사원정보
+FROM 사원
+WHERE 급여 > ('영업부'의 최대 급여);
+
 SELECT EMP_NO, NAME, DEPART, GENDER, POSITION, HIRE_DATE, SALARY
   FROM EMPLOYEE_TBL
  WHERE SALARY > (SELECT MAX(SALARY)
