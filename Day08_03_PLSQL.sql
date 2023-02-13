@@ -79,3 +79,113 @@ BEGIN
      WHERE EMPLOYEE_ID = 100;
     DBMS_OUTPUT.PUT_LINE(FNAME || ',' || LNAME || ',' || SAL);
 END;
+
+-- 3. 레코드 변수
+--    여러 칼럼의 값을 동시에 저장하는 변수  (자바에서 필드 사용하는 거랑 비슷)
+--    레코드 변수 정의(만들기)와 레코드 변수 선언으로 구분해서 진행
+
+DECLARE
+    -- 레코드 변수 정의하기
+    TYPE MY_RECORD_TYPE IS RECORD(   -- 타입명 : MY_RECORD_TYPE
+        FNAME EMPLOYEES.FIRST_NAME%TYPE,
+        LNAME EMPLOYEES.LAST_NAME%TYPE,
+        SAL EMPLOYEES.SALARY%TYPE
+    );
+    -- 레코드 변수 선언하기
+    EMP MY_RECORD_TYPE;
+BEGIN 
+    SELECT FIRST_NAME, LAST_NAME, SALARY
+      INTO EMP  -- EMP 변수에 집어 넣어라(SELECT 에 있는 3개를)
+      FROM EMPLOYEES
+     WHERE EMPLOYEE_ID = 100;
+    DBMS_OUTPUT.PUT_LINE(EMP.FNAME || ',' || EMP.LNAME || ',' || EMP.SAL);
+END;
+
+-- 4. 행 변수
+--    행 전체 데이터를 저장할 수 있는 타입
+--    항상 행 전체 데이터를 저장해야 한다.
+--    선언 방법 : 변수명 테이블명%ROWTYPE
+DECLARE
+    EMP EMPLOYEES%ROWTYPE;
+BEGIN 
+    SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID
+      INTO EMP
+      FROM EMPLOYEES
+     WHERE EMPLOYEE_ID = 100;
+    DBMS_OUTPUT.PUT_LINE(EMP.FIRST_NAME || ',' || EMP.LAST_NAME || ',' || EMP.SALARY);
+END;
+
+
+
+/*
+    IF 구문
+    
+    IF 조건식 THEN
+        실행문
+    ELSIF 조건식 THEN
+        실행문
+    ELSE 
+        실행문
+    END IF;   (<- 이런 거 조심..!)
+    
+*/
+
+-- 성적에 따른 학점(A,B,C,D,F)
+DECLARE
+    SCORE NUMBER(3);
+    GRADE CHAR(1 BYTE);
+BEGIN
+    SCORE := 50;
+    IF SCORE >= 90 THEN
+        GRADE := 'A';
+    ELSIF SCORE >= 80 THEN 
+        GRADE := 'B';
+    ELSIF SCORE >= 70 THEN 
+        GRADE := 'C';
+    ELSIF SCORE >= 60 THEN
+        GRADE := 'D';
+    ELSE
+        GRADE := 'F';
+    END IF;
+    DBMS_OUTPUT.PUT_LINE(SCORE || '점은 ' || GRADE || '학점입니다.');
+END;
+
+-- EMPLOYEE_ID가 150인 사원의 SALARY가 15000 이상이면 '고액연봉', 아니면 '보통연봉'을 출력하시오.
+DECLARE -- 변수처리 하는것 ↓↓
+    EMP_ID EMPLOYEES.EMPLOYEE_ID%TYPE;
+    SAL EMPLOYEES.SALARY%TYPE;
+    MESSAGE VARCHAR2(20 BYTE);
+BEGIN
+    EMP_ID := 150;
+    SELECT SALARY
+    INTO SAL
+    FROM EMPLOYEES
+    WHERE EMPLOYEE_ID = EMP_ID;
+    IF SAL >= 15000 THEN
+        MESSAGE := '고액연봉';
+    ELSE
+        MESSAGE := '보통연봉';
+    END IF;
+    DBMS_OUTPUT.PUT_LINE('사원번호 ' || EMP_ID || '인 사원의 연봉은 ' || SAL || '이고 ' || MESSAGE || '입니다.');
+END;
+
+-- EMPLOYEE_ID가 150인 사원의 COMMISSION_PCT가 0이면 '커미션없음', 아니면 실제 커미션(COMMISSION_PCT * SALARY)을 출력하시오.
+DECLARE
+    EMP_ID EMPLOYEES.EMPLOYEE_ID%TYPE;
+    COMM_PCT EMPLOYEES.COMMISSION_PCT%TYPE; -- 타입 설정해줌.
+    SAL EMPLOYEES.SALARY%TYPE; -- SAL이라고 선언해주고 EMPLOYEES테이블의 SALARY와 같은 타입이다.
+    MESSAGE VARCHAR2(20 BYTE);
+BEGIN
+    EMP_ID := 150;  -- 초기화 해줌.
+    SELECT NVL(COMMISSION_PCT, 0), SALARY
+      INTO COMM_PCT, SAL     -- COMM_PCT에 넣어라
+      FROM EMPLOYEES
+     WHERE EMPLOYEE_ID = EMP_ID;
+    IF COMM_PCT = 0 THEN
+        MESSAGE := '커미션없음';
+    ELSE
+        MESSAGE := TO_CHAR(COMM_PCT * SAL);  -- 숫자 타입을 스트링 타입으로 바꿔줌
+     END IF;
+     DBMS_OUTPUT.PUT_LINE('사원번호 ' || EMP_ID || '인 사원의 커미션은 ' || MESSAGE || '입니다.');
+END;
+
