@@ -292,3 +292,203 @@ BEGIN
         EMP_ID := EMP_ID + 1;
     END LOOP;
 END;
+
+
+/*
+    FOR 구문
+    
+    FOR 변수 IN 시작..종료 LOOP
+        실행문
+    END LOOP;
+*/
+-- 1 ~ 5 출력하기
+DECLARE
+    N NUMBER(1);
+BEGIN
+    FOR N IN 1..5 LOOP
+        DBMS_OUTPUT.PUT_LINE(N);
+    END LOOP;
+END;
+
+-- 1 ~ 10 사이 정수를 '짝수', '홀수', '3의배수'로 출력하시오.
+DECLARE
+    N NUMBER(2);
+    MODULAR NUMBER(1); -- 나머지 값
+    MESSAGE VARCHAR2(10 BYTE);
+BEGIN
+    FOR N IN 1..10 LOOP
+        SELECT MOD(N, 3) -- 함수를 부르려면 SELECT가 필요
+            INTO MODULAR -- N을 3로 나눈 나머지를 MODULAR에 저장
+            FROM DUAL;
+        IF MODULAR = 0 THEN 
+            MESSAGE := '3의배수';  -- 짝수 홀수보다 3의 배수를 먼저해줄 필요가 있다.
+        ELSE 
+            SELECT MOD(N, 2)
+              INTO MODULAR
+              FROM DUAL;
+            IF MODULAR = 1 THEN
+                MESSAGE := '홀수';
+            ELSE
+                MESSAGE := '짝수';
+            END IF;
+        END IF;
+        DBMS_OUTPUT.PUT_LINE(N || '은(는) ' || MESSAGE || '입니다.');
+    END LOOP;
+END;
+
+-- 사원번호가 100 ~ 206인 사원들의 연봉 평균을 출력하시오. 
+-- 연봉 평균 = 연봉 합 / 사원 수 ( AVG 도움없이 힘들게 구하기 )
+DECLARE
+    EMP_ID EMPLOYEES.EMPLOYEE_ID%TYPE;
+    SAL EMPLOYEES.SALARY%TYPE;
+    TOTAL NUMBER;
+    CNT NUMBER;
+BEGIN
+    TOTAL := 0;
+    CNT := 0;
+    FOR EMP_ID IN 100..206 LOOP
+        SELECT SALARY
+          INTO SAL
+          FROM EMPLOYEES
+         WHERE EMPLOYEE_ID = EMP_ID;
+        TOTAL := TOTAL + SAL;
+        CNT := CNT + 1;
+    END LOOP;
+    DBMS_OUTPUT.PUT_LINE(TOTAL / CNT);
+END;
+    
+-- DEPARTMENT_ID가 50인 사원들의 목록을 DEPT50 테이블로 복사하시오.
+-- 1) DEPT50 테이블 만들기
+-- 2) 행 변수로 EMPLOYEES 테이블의 정보 읽기
+-- 3) DEPARTMENT_ID가 50이면 행 변수에 저장된 내용을 DEPT50 테이블에 INSERT
+DROP TABLE DEPT50;
+CREATE TABLE DEPT50
+    AS (SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID
+          FROM EMPLOYEES
+         WHERE 1 = 2);      -- 내용이 없는 테이블 만들기
+
+DECLARE 
+    EMP_ID EMPLOYEES.EMPLOYEE_ID%TYPE;
+    EMP EMPLOYEES%ROWTYPE;
+BEGIN
+    FOR EMP_ID IN 100..206 LOOP
+        SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID
+          INTO EMP
+          FROM EMPLOYEES
+         WHERE EMPLOYEE_ID = EMP_ID;
+        IF EMP.DEPARTMENT_ID = 50 THEN 
+            INSERT INTO DEPT50 VALUES EMP;   -- NULL처리가 필요해서.. IF 씀
+        END IF;
+    END LOOP;
+    COMMIT;    -- INSERT가 다 끝났으면 COMMIT;
+END;
+
+-- 행 변수를 써서 FOR문이 길어진 감이 있음. 줄이자면 아래처럼....
+DECLARE 
+    EMP EMPLOYEES%ROWTYPE;
+BEGIN
+    FOR EMP IN (SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID
+                     FROM EMPLOYEES
+                    WHERE DEPARTMENT_ID = 50) LOOP
+            INSERT INTO DEPT50 VALUES EMP;   -- NULL처리가 필요해서.. IF 씀
+    END LOOP;
+    COMMIT;    -- INSERT가 다 끝났으면 COMMIT;
+END;
+/*
+    EXIT : 반복문 종료하기 (break;처럼)
+    CONTINUE : LOOP문의 시작부터 다시 실행하기.(LOOP문 안에 있는 코드를 실행에서 제외할 때 쓰임. 12345 CONTINUE 6789.)
+*/
+
+-- 1부터 정수 값을 누적하시오. 누적 값이 100을 초과하면 그만 누적하고 어디까지 누적했는지 출력하시오.
+DECLARE
+    N NUMBER;
+    TOTAL NUMBER;
+BEGIN
+    N := 1;
+    TOTAL := 0;
+    WHILE TRUE LOOP     -- 무한루프
+        IF TOTAL > 100 THEN
+            EXIT;
+        END IF;
+        TOTAL := TOTAL + N;
+        N := N + 1;
+    END LOOP;
+    DBMS_OUTPUT.PUT_LINE('1부터 ' || N || '까지 합은 ' || TOTAL || '입니다.');
+END;
+
+-- 1부터 3의 배수를 제외한 정수 값을 누적하시오. 누적 값이 100을 초과하면 그만 누적하고 어디까지 누적했는지 출력하시오.
+DECLARE
+    N NUMBER;
+    TOTAL NUMBER;
+    MODULAR NUMBER(1);
+BEGIN
+    N := 0;
+    TOTAL := 0;
+    MODULAR := 0;
+    WHILE TRUE LOOP     -- 무한루프
+        N := N + 1;
+        IF TOTAL > 100 THEN
+            EXIT;
+        END IF;
+
+        SELECT MOD(N, 3)
+          INTO MODULAR
+          FROM DUAL;
+        IF MODULAR = 0 THEN
+            CONTINUE;
+        END IF;
+        
+        TOTAL := TOTAL + N;   
+    END LOOP;
+    DBMS_OUTPUT.PUT_LINE(TOTAL || '입니다.');
+END;
+
+
+/*
+    예외처리 구문
+    
+    EXCEPTION
+        WHEN 예외종류 THEN 
+            예외처리
+        WHEN 예외종류 THEN
+            예외처리
+        WHEN OTHERS THEN
+            예외처리
+*/
+DECLARE
+    FNAME EMPLOYEES.FIRST_NAME%TYPE;
+BEGIN
+    SELECT FIRST_NAME
+      INTO FNAME
+      FROM EMPLOYEES
+    WHERE EMPLOYEE_ID = 0;
+EXCEPTION 
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('조회된 데이터가 없습니다.');
+END;
+
+DECLARE
+    FNAME EMPLOYEES.FIRST_NAME%TYPE;
+BEGIN
+    SELECT FIRST_NAME
+      INTO FNAME
+      FROM EMPLOYEES
+     WHERE DEPARTMENT_ID = 50;
+EXCEPTION
+    WHEN TOO_MANY_ROWS THEN   -- 둘 이상일 때는 TOO_MANY_ROWS
+        DBMS_OUTPUT.PUT_LINE(SQLERRM); -- 예외 메시지 얻는 방법
+        DBMS_OUTPUT.PUT_LINE('조회된 데이터가 2개 이상입니다.');
+END;
+
+DECLARE
+    FNAME EMPLOYEES.FIRST_NAME%TYPE;
+BEGIN
+    SELECT FIRST_NAME
+      INTO FNAME
+      FROM EMPLOYEES
+     WHERE EMPLOYEE_ID = 0;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(SQLCODE);
+        DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
