@@ -122,5 +122,3 @@ SELECT
      , MY_FLOOR(-1.12, 0) 
   FROM 
        DUAL;
-
-
