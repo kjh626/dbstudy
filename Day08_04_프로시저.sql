@@ -145,8 +145,8 @@ DROP SEQUENCE BUY_SEQ;
 
 -- 제품 테이블 구성하기
 CREATE TABLE PROD_TBL (
-    /*설에*/P_CODE NUMBER NOT NULL,
-    /*명붙*/P_NAME VARCHAR2(20 BYTE),
+    /*설에*/P_CODE  NUMBER NOT NULL,
+    /*명붙*/P_NAME  VARCHAR2(20 BYTE),
     /*을이*/P_PRICE NUMBER,
     /*앞기*/P_STOCK NUMBER
 );
@@ -159,8 +159,8 @@ COMMIT;
 
 -- 고객 테이블 구성하기
 CREATE TABLE CUST_TBL (
-    C_NO NUMBER NOT NULL,
-    C_NAME VARCHAR2(20 BYTE),
+    C_NO    NUMBER NOT NULL,
+    C_NAME  VARCHAR2(20 BYTE),
     C_POINT NUMBER
 );
 
@@ -172,9 +172,9 @@ COMMIT;
 
 -- 구매 테이블 구성하기
 CREATE TABLE BUY_TBL(
-    B_NO NUMBER NOT NULL, -- 기본키
-    C_NO NUMBER NOT NULL, -- 외래키
-    P_CODE NUMBER,        -- 외래키
+    B_NO     NUMBER NOT NULL, -- 기본키
+    C_NO     NUMBER NOT NULL, -- 외래키
+    P_CODE   NUMBER,          -- 외래키
     B_AMOUNT NUMBER
 );
 
@@ -195,7 +195,48 @@ CREATE SEQUENCE BUY_SEQ
 
 
 
+-- BUY_PROC 프로시저 정의
+CREATE OR REPLACE PROCEDURE BUY_PROC
+(
+    /* 고객번호 */  CNO IN CUST_TBL.C_NO%TYPE, 
+    /* 제품코드 */  PCODE IN PROD_TBL.P_CODE%TYPE, 
+    /* 구매수량 */  BUY_AMOUNT IN BUY_TBL.B_AMOUNT%TYPE
+)
+IS  -- 변수 선언할 게 추가적으로 있으면 적어주면 된다.
+BEGIN
 
+    -- 1) 구매내역 테이블에 구매 내역을 추가(INSERT)한다.
+    INSERT INTO BUY_TBL(B_NO, C_NO, P_CODE, B_AMOUNT) VALUES(BUY_SEQ.NEXTVAL, CNO, PCODE, BUY_AMOUNT);
+    
+    -- 2) 제품 테이블의 재고 내역을 수정(UPDATE)한다.
+    UPDATE PROD_TBL SET P_STOCK = P_STOCK - BUY_AMOUNT WHERE P_CODE = PCODE;
+    
+    -- 3) 고객 테이블의 포인트를 수정(UPDATE)한다.
+    --    총 구매액의 10%를 정수로 올림처리해서 포인트로 준다.
+    UPDATE CUST_TBL SET C_POINT = C_POINT + CEIL((SELECT P_PRICE FROM PROD_TBL WHERE P_CODE = PCODE) * BUY_AMOUNT * 0.1) WHERE C_NO = CNO;   -- 가격은 제품 테이블에서 PRICE를 SELECT 해줘야 함. 구매수량은 변수로 받아오기로 해서 상관x
+    
+    -- 4) 커밋
+    COMMIT;
+    
+EXCEPTION
 
+    WHEN OTHERS THEN  -- 모든 예외를 처리
+    
+        -- 예외 사유 확인
+        DBMS_OUTPUT.PUT_LINE(SQLCODE || '(' || SQLERRM || ')');
+        
+        -- 롤백
+        ROLLBACK;
+    
+END;
+
+-- BUY_PROC의 호출
+--1) 방법1
+EXECUTE BUY_PROC(1, 1000,10);  -- 고객번호 1, 제품코드 1000, 구매수량 10
+
+--2) 방법2
+BEGIN
+    BUY_PROC(2, 1001, 5);   -- 고객번호 2, 제품코드 1001 , 구매수량 5
+END;
 
 
