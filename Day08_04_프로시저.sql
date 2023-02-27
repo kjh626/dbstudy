@@ -65,7 +65,7 @@ EXCEPTION
 END;
 
 -- 프로시저3 호출(실행하기) 메소드에 매개변수 넣듯이 해줌.
-EXECUTE PROC3(1);
+EXECUTE PROC3(100);
 
 
 -- 프로시저4 정의(만들기) : 결과(FIRST_NAME, LAST_NAME, SALARY)를 외부에서 전달하도록 해줄 것임. (=> 쉽게 말하면 메소드 반환값을 받아 오겠다는 것)
